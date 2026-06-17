@@ -1,0 +1,29 @@
+import numpy as np
+
+# Sampling
+SAMPLE_RATE = 1000
+DURATION = 2
+
+# Signal Components
+FREQUENCIES = [5, 12, 25]
+AMPLITUDES = [1.0, 0.6, 0.3]
+PHASES = [0, np.pi / 4, np.pi / 3]
+
+# Noise
+GAUSSIAN_SNR = 10
+
+IMPULSE_PROBABILITY = 0.02
+IMPULSE_AMPLITUDE = 4.0
+
+# Distortion
+AMPLITUDE_DISTORTION_FREQS = [5, 12, 25]
+AMPLITUDE_DISTORTION_GAINS = [1.5, 0.3, 0.8]
+
+PHASE_DISTORTION_FREQS = [5, 12]
+PHASE_DISTORTION_SHIFTS = [np.pi / 2, np.pi / 4]
+
+# Filters
+LOWPASS_CUTOFF = 15
+
+# Detection
+ZSCORE_THRESHOLD = 3
