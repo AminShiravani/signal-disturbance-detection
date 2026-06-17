@@ -1,27 +1,22 @@
 # 📡 Signal Disturbance Detection and Adaptive Restoration System
 
+---
+
 ## 🎯 Project Overview
 
-This project implements a complete **Digital Signal Processing (DSP) pipeline** for detecting, analyzing, and mitigating various types of signal disturbances in communication systems.
+This project implements a complete **Digital Signal Processing (DSP) pipeline** for detecting, analyzing, and mitigating different types of signal disturbances in communication systems.
 
-It simulates real-world signal degradation scenarios such as:
-- Gaussian noise contamination
-- Impulse noise (spikes)
-- Amplitude distortion
-- Phase distortion
-- Combined multi-noise environments
-
-and applies adaptive filtering and signal reconstruction techniques to restore signal quality.
+It simulates real-world channel impairments and evaluates how well signal processing techniques can restore degraded signals.
 
 ---
 
-## 🧠 Key Idea
+## 🧠 Core Idea
 
-In real communication systems, transmitted signals are often corrupted by channel noise and distortions.
+In real-world communication systems, transmitted signals are affected by noise and distortions.
 
-This project models that process and builds a system capable of:
+This project models the full pipeline:
 
-> **Detecting disturbances → Analyzing them → Restoring the original signal**
+> **Clean Signal → Disturbance Injection → Detection → Restoration → Evaluation**
 
 ---
 
@@ -29,85 +24,94 @@ This project models that process and builds a system capable of:
 
 ### 📊 Signal Processing
 - Multi-frequency sinusoidal signal generation
-- Time-domain and frequency-domain analysis (FFT)
+- Time-domain analysis
+- Frequency-domain analysis using FFT
 
-### 🔊 Noise & Distortion Modeling
-- Gaussian noise (AWGN channel model)
-- Impulse noise (spike interference)
-- Amplitude distortion (gain variation per frequency)
-- Phase distortion (phase shifting per component)
+### 🔊 Noise & Distortion Models
+- Gaussian noise (AWGN)
+- Impulse noise (spikes)
+- Amplitude distortion
+- Phase distortion
+- Combined real-world disturbances
 
 ### 🧪 Detection System
 - Time-domain noise estimation
-- Frequency-domain spectral deviation analysis
+- FFT-based spectral deviation detection
 - Z-score based impulse detection
 - Distortion classification logic
 
 ### 🔧 Signal Restoration
 - Low-pass filtering (Gaussian noise reduction)
-- Median filtering (impulse noise removal)
-- FFT-based correction for distortions
+- Median filtering (impulse removal)
+- Frequency-domain correction techniques
 
 ### 📈 Evaluation Metrics
-- SNR (Signal-to-Noise Ratio)
-- MSE (Mean Squared Error)
-- RMSE (Root Mean Squared Error)
-- Correlation Coefficient
+- Signal-to-Noise Ratio (SNR)
+- Mean Squared Error (MSE)
+- Root Mean Squared Error (RMSE)
+- Correlation coefficient
 
 ---
 
 ## 🧪 Experiments
 
-The system is evaluated through five structured experiments:
+The system evaluates five main scenarios:
 
-1. **Gaussian Noise Analysis**
-2. **Impulse Noise Detection & Removal**
-3. **Amplitude Distortion Analysis**
-4. **Phase Distortion Analysis**
-5. **Combined Real-World Disturbance Scenario**
+1. Gaussian noise analysis  
+2. Impulse noise detection & removal  
+3. Amplitude distortion analysis  
+4. Phase distortion analysis  
+5. Combined real-world disturbance scenario  
 
 Each experiment includes:
-- Signal corruption simulation
+- Signal corruption
 - Disturbance detection
 - Signal restoration
 - Performance evaluation
 
 ---
 
-## 📊 Example Output
+## 📊 Results Interpretation
 
 The system compares:
 
-- Clean Signal
-- Corrupted Signal
-- Processed (Restored) Signal
+- 🔵 Clean Signal (reference)
+- 🟠 Corrupted Signal (noisy/distorted)
+- 🟢 Processed Signal (restored)
 
-and evaluates improvements using quantitative metrics like SNR and correlation.
+and evaluates performance using:
+- SNR improvement
+- Error reduction (MSE / RMSE)
+- Signal similarity (Correlation)
 
 ---
 
 ## 🧩 Project Structure
-project/
-│
-├── config.py
-├── signal_generator.py
-├── noise_adder.py
-├── distortion.py
-├── filters.py
-├── metrics.py
-├── detectors.py
-├── plots.py
-│
-├── experiments/
-│ ├── exp1_gaussian.py
-│ ├── exp2_impulse.py
-│ ├── exp3_amplitude.py
-│ ├── exp4_phase.py
-│ └── exp5_combined.py
-│ 
-│
-└── final_demo.py
 
+project/
+
+├── config.py  
+├── signal_generator.py  
+├── noise_adder.py  
+├── distortion.py  
+├── filters.py  
+├── metrics.py  
+├── detectors.py  
+├── plots.py  
+
+├── experiments/  
+│   ├── exp1_gaussian.py  
+│   ├── exp2_impulse.py  
+│   ├── exp3_amplitude.py  
+│   ├── exp4_phase.py  
+│   └── exp5_combined.py  
+
+├── results/  
+│   ├── figures/  
+│   ├── tables/  
+│   └── reports/  
+
+└── final_demo.py  
 
 ---
 
@@ -116,29 +120,31 @@ project/
 ```bash
 pip install -r requirements.txt
 python final_demo.py
+```
 
-📌 Technologies Used
+## 🛠 Technologies Used
+
 Python 3
 NumPy
 SciPy
 Matplotlib
-Digital Signal Processing (DSP) concepts
-🧠 What This Project Demonstrates
+Digital Signal Processing (DSP)
 
-This project demonstrates:
+## 🧠 Key Concepts Demonstrated
 
-Understanding of DSP fundamentals
+Signal modeling and synthesis
 Noise modeling in communication systems
-Frequency-domain signal analysis
+Frequency-domain analysis (FFT)
 Adaptive filtering techniques
-Performance evaluation of signal restoration systems
-📈 Conclusion
+Signal quality evaluation metrics
 
-This system simulates a simplified communication channel and demonstrates how digital signal processing techniques can be used to detect and mitigate real-world signal disturbances.
+## 📌 Conclusion
 
-While idealized, it provides a strong foundation for understanding practical DSP systems used in modern communication engineering.
+This project simulates a simplified communication channel with realistic disturbances and demonstrates how DSP techniques can be used to detect and reduce signal degradation.
 
-👨‍💻 Author
+While simplified, it provides a strong foundation for understanding practical signal processing systems used in modern communications.
+
+## 👨‍💻 Author
 
 Student Project – Signal Processing Course
 Focus: Signal Disturbance Detection & Restoration
