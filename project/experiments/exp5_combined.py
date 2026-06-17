@@ -13,56 +13,87 @@ from detectors import detect_comprehensive
 from metrics import calculate_all_metrics
 from plots import show_time_plots, show_fft_plots, compare_signals
 
+# -------------------------
+# 1. Time vector
+# -------------------------
 t = np.linspace(0, DURATION, int(SAMPLE_RATE * DURATION), endpoint=False)
 
+# -------------------------
+# 2. Clean signal
+# -------------------------
 clean_signal = generate_multitone(t, FREQUENCIES, AMPLITUDES, PHASES)
 
-noisy_signal, _ = add_combined_noise(
+# -------------------------
+# 3. Add noise (channel impairment)
+# -------------------------
+corrupted_signal, _ = add_combined_noise(
     clean_signal, GAUSSIAN_SNR, IMPULSE_PROBABILITY, IMPULSE_AMPLITUDE
 )
 
-distorted = apply_amplitude_distortion(
-    noisy_signal, SAMPLE_RATE, AMPLITUDE_DISTORTION_FREQS, AMPLITUDE_DISTORTION_GAINS
+# -------------------------
+# 4. Apply channel distortions
+# -------------------------
+distorted_signal = apply_amplitude_distortion(
+    corrupted_signal,
+    SAMPLE_RATE,
+    AMPLITUDE_DISTORTION_FREQS,
+    AMPLITUDE_DISTORTION_GAINS,
 )
 
-distorted = apply_phase_distortion(
-    distorted, SAMPLE_RATE, PHASE_DISTORTION_FREQS, PHASE_DISTORTION_SHIFTS
+distorted_signal = apply_phase_distortion(
+    distorted_signal, SAMPLE_RATE, PHASE_DISTORTION_FREQS, PHASE_DISTORTION_SHIFTS
 )
 
-# Detection
-detection = detect_comprehensive(clean_signal, distorted)
-print("Detection:", detection)
+# -------------------------
+# 5. Detection stage
+# -------------------------
+detection = detect_comprehensive(clean_signal, distorted_signal)
 
-# FIX PIPELINE (Adaptive)
-signal = distorted
+print("\n=== Detection Result ===")
+print(detection)
 
-if detection["impulses_count"] > 0:
-    signal = median_filter(signal)
+# -------------------------
+# 6. Adaptive filtering (NO reconstruction)
+# -------------------------
+processed_signal = distorted_signal
 
-if detection["is_gaussian"]:
-    signal = lowpass_filter(signal, 15, SAMPLE_RATE)
+# impulse noise handling
+if detection.get("impulses_count", 0) > 0:
+    processed_signal = median_filter(processed_signal)
 
-# Metrics
-before = calculate_all_metrics(clean_signal, distorted)
-after = calculate_all_metrics(clean_signal, signal)
+# gaussian noise handling
+if detection.get("is_gaussian", False):
+    processed_signal = lowpass_filter(processed_signal, cutoff=15, fs=SAMPLE_RATE)
 
-print("BEFORE:", before)
-print("AFTER:", after)
+# -------------------------
+# 7. Metrics comparison
+# -------------------------
+before = calculate_all_metrics(clean_signal, distorted_signal)
+after = calculate_all_metrics(clean_signal, processed_signal)
 
+print("\n=== BEFORE ===")
+print(before)
+
+print("\n=== AFTER ===")
+print(after)
+
+# -------------------------
+# 8. Visualization
+# -------------------------
 show_time_plots(
-    "Combined Distortion (FULL SYSTEM)",
+    "Experiment 5 - Adaptive DSP Disturbance Detection",
     [
-        ("Clean", t, clean_signal),
-        ("Corrupted", t, distorted),
-        ("Recovered", t, signal),
+        ("Clean Signal", t, clean_signal),
+        ("Corrupted Signal", t, distorted_signal),
+        ("Processed Signal", t, processed_signal),
     ],
 )
 
 show_fft_plots(
-    "FFT Comparison",
-    [clean_signal, distorted, signal],
+    "Frequency Domain Analysis",
+    [clean_signal, distorted_signal, processed_signal],
     SAMPLE_RATE,
-    ["Clean", "Corrupted", "Recovered"],
+    ["Clean", "Corrupted", "Processed"],
 )
 
-compare_signals(t, clean_signal, signal)
+compare_signals(t, clean_signal, processed_signal)

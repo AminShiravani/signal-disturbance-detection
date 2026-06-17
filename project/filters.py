@@ -1,19 +1,23 @@
 import numpy as np
 
 
-# Median Filter (improved)
+# -------------------------
+# Median Filter
+# -------------------------
 def median_filter(signal, kernel_size=5):
     padded = np.pad(signal, kernel_size // 2, mode="edge")
-    filtered = []
+    result = []
 
     for i in range(len(signal)):
         window = padded[i : i + kernel_size]
-        filtered.append(np.median(window))
+        result.append(np.median(window))
 
-    return np.array(filtered)
+    return np.array(result)
 
 
-# Low-pass filter (FFT based - better than simple)
+# -------------------------
+# Low-pass Filter (FFT based)
+# -------------------------
 def lowpass_filter(signal, cutoff, fs):
     fft = np.fft.fft(signal)
     freqs = np.fft.fftfreq(len(signal), 1 / fs)
@@ -22,7 +26,3 @@ def lowpass_filter(signal, cutoff, fs):
 
     return np.real(np.fft.ifft(fft))
 
-
-# Adaptive correction for amplitude distortion
-def amplitude_correction(signal, gain_estimate=1.0):
-    return signal / gain_estimate

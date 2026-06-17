@@ -41,14 +41,22 @@ def detect_amplitude_distortion(clean, distorted):
 # -------------------------
 # Phase Distortion
 # -------------------------
-def detect_phase_distortion(clean, distorted):
-    c_fft = np.fft.fft(clean)
-    d_fft = np.fft.fft(distorted)
+def detect_phase_distortion(clean, distorted, threshold=0.1):
+    """
+    Real phase distortion detection using FFT phase difference
+    """
 
-    phase_diff = np.angle(c_fft) - np.angle(d_fft)
-    phase_error = np.mean(np.abs(np.unwrap(phase_diff)))
+    clean_fft = np.fft.fft(clean)
+    dist_fft = np.fft.fft(distorted)
 
-    return {"phase_error": phase_error, "is_distorted": phase_error > 0.3}
+    clean_phase = np.angle(clean_fft)
+    dist_phase = np.angle(dist_fft)
+
+    phase_diff = np.mean(np.abs(clean_phase - dist_phase))
+
+    is_distorted = phase_diff > threshold
+
+    return {"phase_error": float(phase_diff), "is_distorted": bool(is_distorted)}
 
 
 # -------------------------
