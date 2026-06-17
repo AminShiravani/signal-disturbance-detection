@@ -4,66 +4,49 @@ import numpy as np
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config import SAMPLE_RATE, DURATION, FREQUENCIES, AMPLITUDES, PHASES, GAUSSIAN_SNR
-
+from config import *
 from signal_generator import generate_multitone
 from noise_adder import add_gaussian_noise
 from filters import lowpass_filter
 from metrics import calculate_all_metrics
 from detectors import detect_gaussian_noise
-from plots import show_time_plots, show_fft_plots, compare_signals
+from fft_analysis import spectral_snr, fft_gaussian_detector
+from plots import plot_time_signal, plot_fft, compare_signals
 
-# -------------------------
-# 1. Time
-# -------------------------
 t = np.linspace(0, DURATION, int(SAMPLE_RATE * DURATION), endpoint=False)
 
-# -------------------------
-# 2. Clean signal
-# -------------------------
-clean_signal = generate_multitone(t, FREQUENCIES, AMPLITUDES, PHASES)
+clean = generate_multitone(t, FREQUENCIES, AMPLITUDES, PHASES)
 
-# -------------------------
-# 3. Noise
-# -------------------------
-noisy_signal, noise, snr = add_gaussian_noise(clean_signal, GAUSSIAN_SNR)
+noisy, _, snr = add_gaussian_noise(clean, GAUSSIAN_SNR)
 
-print("Input SNR:", snr)
+print("TIME SNR:", snr)
 
-# -------------------------
-# 4. Detection
-# -------------------------
-detection = detect_gaussian_noise(clean_signal, noisy_signal)
-print("Detection:", detection)
+# ---------------- FFT detection ----------------
+fft_result = fft_gaussian_detector(clean, noisy)
+spec_snr = spectral_snr(clean, noisy)
 
-# -------------------------
-# 5. Fix (Filter)
-# -------------------------
-filtered_signal = lowpass_filter(noisy_signal, cutoff=15, fs=SAMPLE_RATE)
+print("\nFFT Detection:", fft_result)
+print("Spectral SNR:", spec_snr)
 
-# -------------------------
-# 6. Metrics
-# -------------------------
-before = calculate_all_metrics(clean_signal, noisy_signal)
-after = calculate_all_metrics(clean_signal, filtered_signal)
+# ---------------- time detection ----------------
+time_det = detect_gaussian_noise(clean, noisy)
+print("\nTime Detection:", time_det)
 
-print("BEFORE:", before)
+# ---------------- filtering ----------------
+filtered = lowpass_filter(noisy, 15, SAMPLE_RATE)
+
+before = calculate_all_metrics(clean, noisy)
+after = calculate_all_metrics(clean, filtered)
+
+print("\nBEFORE:", before)
 print("AFTER:", after)
 
-# -------------------------
-# 7. Visualization
-# -------------------------
-show_time_plots(
-    "Gaussian Noise Analysis",
-    [
-        ("Clean", t, clean_signal),
-        ("Noisy", t, noisy_signal),
-        ("Filtered", t, filtered_signal),
-    ],
-)
+# ---------------- plots ----------------
+plot_time_signal(t, clean, "Clean")
+plot_time_signal(t, noisy, "Noisy")
+plot_time_signal(t, filtered, "Filtered")
 
-show_fft_plots(
-    "FFT Comparison", [clean_signal, noisy_signal], SAMPLE_RATE, ["Clean", "Noisy"]
-)
+plot_fft(clean, SAMPLE_RATE, "FFT Clean")
+plot_fft(noisy, SAMPLE_RATE, "FFT Noisy")
 
-compare_signals(t, clean_signal, filtered_signal)
+compare_signals(t, clean, filtered)

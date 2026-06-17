@@ -19,6 +19,7 @@ from distortion import apply_amplitude_distortion
 from metrics import calculate_all_metrics
 from detectors import detect_amplitude_distortion
 from plots import show_time_plots, show_fft_plots, compare_signals
+from fft_analysis import spectral_snr
 
 t = np.linspace(0, DURATION, int(SAMPLE_RATE * DURATION), endpoint=False)
 
@@ -32,8 +33,10 @@ detection = detect_amplitude_distortion(clean_signal, distorted_signal)
 print("Detection:", detection)
 
 before = calculate_all_metrics(clean_signal, distorted_signal)
-
 print("Metrics:", before)
+
+spec_snr = spectral_snr(clean_signal, distorted_signal)
+print("Spectral SNR:", spec_snr)
 
 show_time_plots(
     "Amplitude Distortion",

@@ -1,6 +1,5 @@
 import numpy as np
 
-
 # -------------------------
 # Gaussian Noise Detection (SNR-based)
 # -------------------------

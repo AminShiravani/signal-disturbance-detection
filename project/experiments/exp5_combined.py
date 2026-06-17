@@ -12,6 +12,7 @@ from filters import median_filter, lowpass_filter
 from detectors import detect_comprehensive
 from metrics import calculate_all_metrics
 from plots import show_time_plots, show_fft_plots, compare_signals
+from fft_analysis import spectral_snr, fft_gaussian_detector
 
 # -------------------------
 # 1. Time vector
@@ -64,6 +65,11 @@ if detection.get("impulses_count", 0) > 0:
 # gaussian noise handling
 if detection.get("is_gaussian", False):
     processed_signal = lowpass_filter(processed_signal, cutoff=15, fs=SAMPLE_RATE)
+
+fft_det = fft_gaussian_detector(clean_signal, distorted_signal)
+spec_snr = spectral_snr(clean_signal, distorted_signal)
+print("\nFFT Detection:", fft_det)
+print("Spectral SNR:", spec_snr)
 
 # -------------------------
 # 7. Metrics comparison

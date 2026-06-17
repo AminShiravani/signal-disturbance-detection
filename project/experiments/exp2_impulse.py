@@ -20,6 +20,7 @@ from filters import median_filter
 from metrics import calculate_all_metrics
 from detectors import detect_impulses
 from plots import show_time_plots, show_fft_plots, compare_signals
+from fft_analysis import spectral_snr
 
 t = np.linspace(0, DURATION, int(SAMPLE_RATE * DURATION), endpoint=False)
 
@@ -42,6 +43,10 @@ after = calculate_all_metrics(clean_signal, filtered_signal)
 
 print("BEFORE:", before)
 print("AFTER:", after)
+
+spec_snr = spectral_snr(clean_signal, noisy_signal)
+print("Spectral SNR:", spec_snr)
+
 
 show_time_plots(
     "Impulse Noise Analysis",
