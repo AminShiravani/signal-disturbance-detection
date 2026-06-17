@@ -106,11 +106,6 @@ project/
 │   ├── exp4_phase.py  
 │   └── exp5_combined.py  
 
-├── results/  
-│   ├── figures/  
-│   ├── tables/  
-│   └── reports/  
-
 └── final_demo.py  
 
 ---
@@ -122,21 +117,26 @@ pip install -r requirements.txt
 python final_demo.py
 ```
 
+
 ## 🛠 Technologies Used
 
-Python 3
-NumPy
-SciPy
-Matplotlib
-Digital Signal Processing (DSP)
+- Python 3  
+- NumPy  
+- SciPy  
+- Matplotlib  
+- Digital Signal Processing (DSP)
+
+---
 
 ## 🧠 Key Concepts Demonstrated
 
-Signal modeling and synthesis
-Noise modeling in communication systems
-Frequency-domain analysis (FFT)
-Adaptive filtering techniques
-Signal quality evaluation metrics
+- Signal modeling and synthesis  
+- Noise modeling in communication systems  
+- Frequency-domain analysis (FFT)  
+- Adaptive filtering techniques  
+- Signal quality evaluation metrics  
+
+---
 
 ## 📌 Conclusion
 
@@ -144,7 +144,9 @@ This project simulates a simplified communication channel with realistic disturb
 
 While simplified, it provides a strong foundation for understanding practical signal processing systems used in modern communications.
 
+---
+
 ## 👨‍💻 Author
 
-Student Project – Signal Processing Course
+Student Project – Signal Processing Course  
 Focus: Signal Disturbance Detection & Restoration
