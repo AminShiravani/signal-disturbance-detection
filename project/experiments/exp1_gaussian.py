@@ -1,9 +1,8 @@
 import os
 import sys
+import numpy as np
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-import numpy as np
 
 from config import SAMPLE_RATE, DURATION, FREQUENCIES, AMPLITUDES, PHASES, GAUSSIAN_SNR
 
@@ -12,59 +11,59 @@ from noise_adder import add_gaussian_noise
 from filters import lowpass_filter
 from metrics import calculate_all_metrics
 from detectors import detect_gaussian_noise
-from plots import plot_time_signal, plot_fft, compare_signals
+from plots import show_time_plots, show_fft_plots, compare_signals
 
 # -------------------------
-# 1. Time vector
+# 1. Time
 # -------------------------
 t = np.linspace(0, DURATION, int(SAMPLE_RATE * DURATION), endpoint=False)
 
 # -------------------------
-# 2. Generate clean signal
+# 2. Clean signal
 # -------------------------
 clean_signal = generate_multitone(t, FREQUENCIES, AMPLITUDES, PHASES)
 
 # -------------------------
-# 3. Add Gaussian noise
+# 3. Noise
 # -------------------------
 noisy_signal, noise, snr = add_gaussian_noise(clean_signal, GAUSSIAN_SNR)
 
-print(f"Input SNR: {snr:.2f} dB")
+print("Input SNR:", snr)
 
 # -------------------------
 # 4. Detection
 # -------------------------
 detection = detect_gaussian_noise(clean_signal, noisy_signal)
-
-print("\nDetection Result:")
-print(detection)
+print("Detection:", detection)
 
 # -------------------------
-# 5. Filtering
+# 5. Fix (Filter)
 # -------------------------
 filtered_signal = lowpass_filter(noisy_signal, cutoff=15, fs=SAMPLE_RATE)
 
 # -------------------------
 # 6. Metrics
 # -------------------------
-metrics_before = calculate_all_metrics(clean_signal, noisy_signal)
+before = calculate_all_metrics(clean_signal, noisy_signal)
+after = calculate_all_metrics(clean_signal, filtered_signal)
 
-metrics_after = calculate_all_metrics(clean_signal, filtered_signal)
-
-print("\nMetrics BEFORE filtering:")
-print(metrics_before)
-
-print("\nMetrics AFTER filtering:")
-print(metrics_after)
+print("BEFORE:", before)
+print("AFTER:", after)
 
 # -------------------------
-# 7. Plots (Report Figures)
+# 7. Visualization
 # -------------------------
-plot_time_signal(t, clean_signal, "Clean Signal")
-plot_time_signal(t, noisy_signal, "Noisy Signal (Gaussian)")
-plot_time_signal(t, filtered_signal, "Filtered Signal")
+show_time_plots(
+    "Gaussian Noise Analysis",
+    [
+        ("Clean", t, clean_signal),
+        ("Noisy", t, noisy_signal),
+        ("Filtered", t, filtered_signal),
+    ],
+)
 
-plot_fft(clean_signal, SAMPLE_RATE, "FFT - Clean Signal")
-plot_fft(noisy_signal, SAMPLE_RATE, "FFT - Noisy Signal")
+show_fft_plots(
+    "FFT Comparison", [clean_signal, noisy_signal], SAMPLE_RATE, ["Clean", "Noisy"]
+)
 
 compare_signals(t, clean_signal, filtered_signal)

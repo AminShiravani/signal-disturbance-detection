@@ -1,74 +1,70 @@
 import numpy as np
-from scipy.stats import zscore
 
 
-def detect_impulses(signal, threshold=3):
-    """
-    Detecting spikes with Z-score
-    """
+# -------------------------
+# Gaussian Noise Detection (SNR-based)
+# -------------------------
+def detect_gaussian_noise(clean, noisy):
+    noise = noisy - clean
+    noise_power = np.mean(noise**2)
+    signal_power = np.mean(clean**2)
+    snr = 10 * np.log10(signal_power / noise_power)
 
-    z = np.abs(zscore(signal))
-    impulses = z > threshold
+    return {"noise_power": noise_power, "estimated_snr": snr, "is_noisy": snr < 15}
+
+
+# -------------------------
+# Impulse Detection (robust z-score)
+# -------------------------
+def detect_impulses(signal):
+    median = np.median(signal)
+    mad = np.median(np.abs(signal - median))
+
+    threshold = 3 * mad
+    impulses = np.abs(signal - median) > threshold
+
     return impulses
 
 
-def detect_gaussian_noise(original, noisy):
-    """
-    Estimation of the existence of Gaussian noise with energy difference
-    """
+# -------------------------
+# Amplitude Distortion (spectral energy shift)
+# -------------------------
+def detect_amplitude_distortion(clean, distorted):
+    c_fft = np.abs(np.fft.fft(clean))
+    d_fft = np.abs(np.fft.fft(distorted))
 
-    noise = noisy - original
-    noise_power = np.mean(noise**2)
-    signal_power = np.mean(original**2)
+    diff = np.mean(np.abs(c_fft - d_fft)) / np.mean(c_fft)
 
-    snr_est = 10 * np.log10(signal_power / (noise_power + 1e-12))
-
-    return {
-        "noise_power": noise_power,
-        "estimated_snr": snr_est,
-        "is_noisy": snr_est < 20,
-    }
+    return {"spectral_distortion": diff, "is_distorted": diff > 0.2}
 
 
-def detect_amplitude_distortion(original, processed):
-    """
-    Checking spectral shift for amplitude distortion
-    """
+# -------------------------
+# Phase Distortion
+# -------------------------
+def detect_phase_distortion(clean, distorted):
+    c_fft = np.fft.fft(clean)
+    d_fft = np.fft.fft(distorted)
 
-    O = np.abs(np.fft.fft(original))
-    P = np.abs(np.fft.fft(processed))
+    phase_diff = np.angle(c_fft) - np.angle(d_fft)
+    phase_error = np.mean(np.abs(np.unwrap(phase_diff)))
 
-    distortion = np.mean(np.abs(O - P))
-
-    return {
-        "spectral_distortion": distortion,
-        "is_distorted": distortion > 0.1 * np.mean(O),
-    }
+    return {"phase_error": phase_error, "is_distorted": phase_error > 0.3}
 
 
-def detect_phase_distortion(original, processed):
-    """
-    Checking the phase difference
-    """
+# -------------------------
+# Combined detection (NEW INTELLIGENT LAYER)
+# -------------------------
+def detect_comprehensive(clean, signal):
 
-    O = np.angle(np.fft.fft(original))
-    P = np.angle(np.fft.fft(processed))
-
-    phase_error = np.mean(np.abs(O - P))
-
-    return {"phase_error": phase_error, "is_distorted": phase_error > 0.5}
-
-
-def detect_comprehensive(original, signal):
-    """
-    Combined diagnosis
-    """
-
-    impulse = detect_impulses(signal)
-    gaussian = detect_gaussian_noise(original, signal)
+    gauss = detect_gaussian_noise(clean, signal)
+    impulses = detect_impulses(signal)
+    amp = detect_amplitude_distortion(clean, signal)
+    phase = detect_phase_distortion(clean, signal)
 
     return {
-        "impulses_count": np.sum(impulse),
-        "is_gaussian": gaussian["is_noisy"],
-        "snr_est": gaussian["estimated_snr"],
+        "impulses_count": int(np.sum(impulses)),
+        "is_gaussian": gauss["is_noisy"],
+        "snr_est": gauss["estimated_snr"],
+        "amplitude_issue": amp["is_distorted"],
+        "phase_issue": phase["is_distorted"],
     }

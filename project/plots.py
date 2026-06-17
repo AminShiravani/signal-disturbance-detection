@@ -2,43 +2,49 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_time_signal(t, signal, title="Signal"):
-    plt.figure(figsize=(10, 3))
-    plt.plot(t, signal)
+# -------------------------
+# Time domain plots (MAIN FIX)
+# -------------------------
+def show_time_plots(title, plots):
+    plt.figure(figsize=(12, 3 * len(plots)))
+    plt.suptitle(title)
+
+    for i, (name, t, y) in enumerate(plots, 1):
+        plt.subplot(len(plots), 1, i)
+        plt.plot(t, y)
+        plt.title(name)
+        plt.grid()
+
+    plt.tight_layout()
+    plt.show()
+
+
+# -------------------------
+# FFT comparison
+# -------------------------
+def show_fft_plots(title, signals, fs, labels):
+    plt.figure(figsize=(12, 4))
+
+    for sig, label in zip(signals, labels):
+        N = len(sig)
+        f = np.fft.fftfreq(N, 1 / fs)
+        X = np.abs(np.fft.fft(sig))
+
+        plt.plot(f[: N // 2], X[: N // 2], label=label)
+
     plt.title(title)
-    plt.xlabel("Time")
-    plt.ylabel("Amplitude")
+    plt.legend()
     plt.grid()
     plt.show()
 
 
-def plot_fft(signal, fs, title="FFT"):
-    N = len(signal)
-    freq = np.fft.fftfreq(N, 1 / fs)
-    spectrum = np.abs(np.fft.fft(signal))
-
-    plt.figure(figsize=(10, 3))
-    plt.plot(freq[: N // 2], spectrum[: N // 2])
-    plt.title(title)
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("Magnitude")
-    plt.grid()
-    plt.show()
-
-
-def plot_noise_locations(signal, locations, title="Impulse Detection"):
-    plt.figure(figsize=(10, 3))
-    plt.plot(signal)
-    plt.scatter(np.where(locations)[0], signal[locations], color="red")
-    plt.title(title)
-    plt.grid()
-    plt.show()
-
-
+# -------------------------
+# Compare signal
+# -------------------------
 def compare_signals(t, original, processed):
     plt.figure(figsize=(10, 4))
     plt.plot(t, original, label="Original")
-    plt.plot(t, processed, label="Processed", alpha=0.7)
+    plt.plot(t, processed, label="Processed")
     plt.legend()
     plt.title("Comparison")
     plt.grid()
