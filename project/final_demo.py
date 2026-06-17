@@ -1,5 +1,8 @@
 import os
+import sys
 import subprocess
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 EXPERIMENTS = [
     "experiments/exp1_gaussian.py",
@@ -11,28 +14,24 @@ EXPERIMENTS = [
 
 
 def run_experiment(path):
+    full_path = os.path.join(BASE_DIR, path)
+
     print("\n" + "=" * 60)
     print(f"Running {path}")
     print("=" * 60 + "\n")
 
-    subprocess.run(["python", path], check=True)
+    subprocess.run([sys.executable, full_path], check=True, cwd=BASE_DIR)
 
 
 def main():
+    print("\nSTARTING SIGNAL DISTORTION ANALYSIS PROJECT\n")
 
-    print("STARTING SIGNAL DISTORTION ANALYSIS PROJECT\n")
 
-    # Create the output folder (if it doesn't exist)
-    os.makedirs("results/figures", exist_ok=True)
-    os.makedirs("results/tables", exist_ok=True)
-    os.makedirs("results/reports", exist_ok=True)
-
-    # Run all tests
     for exp in EXPERIMENTS:
         run_experiment(exp)
 
-    print("ALL EXPERIMENTS COMPLETED SUCCESSFULLY")
-    print("Check results/ folder for outputs")
+    print("\nALL EXPERIMENTS COMPLETED SUCCESSFULLY")
+    print("Check results/ folder for outputs\n")
 
 
 if __name__ == "__main__":
